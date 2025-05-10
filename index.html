@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Dieta e Exercícios Responsiva</title>
+    <style>
+        /* Reset básico e estilos globais */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+            line-height: 1.6;
+            background-color: #f0f2f5; /* Cor de fundo suave */
+            color: #333;
+            padding: 10px; /* Espaçamento nas bordas para telas pequenas */
+            font-size: 16px; /* Tamanho de fonte base */
+        }
+
+        .container {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            max-width: 700px;
+            margin: 20px auto; /* Centraliza e adiciona margem vertical */
+        }
+
+        /* Títulos */
+        h1 {
+            font-size: 2em; /* 32px se base for 16px */
+            color: #1d3557; /* Azul mais escuro */
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        h2 { /* Usado para o resultado do IMC */
+            font-size: 1.6em;
+            color: #1d3557;
+            margin-bottom: 15px;
+        }
+
+        h3 { /* Títulos das seções de dieta e exercícios */
+            font-size: 1.4em;
+            color: #0056b3; /* Mantido o azul anterior */
+            margin-top: 30px; /* Mais espaço antes das seções */
+            margin-bottom: 15px;
+            border-bottom: 2px solid #e9f7fd; /* Linha sutil abaixo do título da seção */
+            padding-bottom: 8px;
+        }
+
+        h4 { /* Subtítulos dentro das seções */
+            font-size: 1.15em;
+            color: #0056b3;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+
+        /* Formulário */
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600; /* Um pouco mais de peso na fonte */
+            color: #495057; /* Cinza escuro para labels */
+        }
+
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 20px; /* Mais espaço abaixo dos inputs */
+            border: 1px solid #ced4da; /* Borda padrão do Bootstrap */
+            border-radius: 4px;
+            font-size: 1em; /* 16px se base for 16px */
+            color: #495057;
+        }
+        input[type="number"]:focus,
+        select:focus {
+            border-color: #80bdff; /* Destaque no foco */
+            outline: 0;
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+        }
+
+
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: 600;
+            width: 100%;
+            display: block;
+            margin-top: 10px; /* Espaço acima do botão */
+            margin-bottom: 20px; /* Espaço abaixo do botão */
+            transition: background-color 0.2s ease-in-out;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Seções de Resultado */
+        #resultadoIMC,
+        #planoDieta,
+        #sugestoesExercicio {
+            margin-top: 25px;
+            padding: 20px; /* Mais padding interno */
+            border: 1px solid #e0e0e0; /* Borda sutil */
+            border-radius: 6px;
+            background-color: #f8f9fa; /* Fundo levemente acinzentado */
+        }
+
+        #planoDieta h3,
+        #sugestoesExercicio h3 {
+            margin-top: 0; /* Remover margem superior para H3 dentro dessas divs */
+        }
+
+        ul {
+            padding-left: 20px; /* Recuo padrão para listas */
+            list-style-position: outside;
+        }
+
+        li {
+            margin-bottom: 8px; /* Espaçamento entre itens da lista */
+        }
+
+        /* Mensagem de Erro */
+        .error {
+            color: #dc3545; /* Vermelho para erros */
+            font-weight: bold;
+            background-color: #f8d7da; /* Fundo rosa claro para erro */
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid #f5c6cb;
+            margin-bottom: 15px;
+        }
+
+        /* Disclaimer */
+        .disclaimer {
+            font-size: 0.85em; /* Um pouco maior */
+            color: #6c757d; /* Cinza para o disclaimer */
+            margin-top: 30px;
+            text-align: center;
+            padding: 10px;
+            background-color: #e9ecef; /* Fundo leve para o disclaimer */
+            border-radius: 4px;
+        }
+        .disclaimer strong {
+            color: #495057;
+        }
+
+
+        /* --- Media Queries para Responsividade --- */
+
+        /* Para tablets e telas menores (ex: abaixo de 768px) */
+        @media (max-width: 768px) {
+            body {
+                font-size: 15px; /* Ajustar tamanho da fonte base */
+            }
+            .container {
+                margin: 15px auto;
+                padding: 15px;
+            }
+
+            h1 { font-size: 1.8em; }
+            h2 { font-size: 1.5em; }
+            h3 { font-size: 1.3em; }
+            h4 { font-size: 1.1em; }
+
+            input[type="number"],
+            select,
+            button {
+                font-size: 1em; /* Manter inputs legíveis */
+            }
+        }
+
+        /* Para celulares (ex: abaixo de 480px) */
+        @media (max-width: 480px) {
+            body {
+                font-size: 14px; /* Reduzir mais um pouco a fonte base */
+                padding: 5px; /* Menos padding no body */
+            }
+            .container {
+                margin: 10px auto; /* Menos margem para o container */
+                padding: 10px;
+                border-radius: 4px;
+            }
+
+            h1 { font-size: 1.6em; margin-bottom: 20px;}
+            h2 { font-size: 1.35em; }
+            h3 { font-size: 1.2em; padding-bottom: 6px; }
+            h4 { font-size: 1.05em; }
+
+            input[type="number"],
+            select {
+                padding: 10px;
+                margin-bottom: 15px;
+            }
+
+            button {
+                padding: 12px 15px; /* Padding do botão um pouco maior para toque */
+                font-size: 1em;
+            }
+
+            #resultadoIMC,
+            #planoDieta,
+            #sugestoesExercicio {
+                padding: 15px;
+                margin-top: 20px;
+            }
+
+            ul {
+                padding-left: 18px;
+            }
+            li {
+                margin-bottom: 6px;
+            }
+
+            .disclaimer {
+                font-size: 0.8em;
+                padding: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Calculadora de Dieta e Sugestão de Exercícios</h1>
+
+        <div>
+            <label for="peso">Seu Peso (kg):</label>
+            <input type="number" id="peso" placeholder="Ex: 70" aria-label="Seu Peso em quilogramas">
+        </div>
+
+        <div>
+            <label for="altura">Sua Altura (cm):</label>
+            <input type="number" id="altura" placeholder="Ex: 175" aria-label="Sua Altura em centímetros">
+        </div>
+
+        <div>
+            <label for="biotipo">Seu Biotipo:</label>
+            <select id="biotipo" aria-label="Selecione seu biotipo">
+                <option value="">Selecione o Biotipo</option>
+                <option value="ectomorfo">Ectomorfo</option>
+                <option value="mesomorfo">Mesomorfo</option>
+                <option value="endomorfo">Endomorfo</option>
+            </select>
+        </div>
+
+        <button onclick="calcularPlano()">Calcular Plano Completo</button>
+
+        <div id="resultadoIMC"></div>
+        <div id="planoDieta"></div>
+        <div id="sugestoesExercicio"></div>
+
+        <p class="disclaimer">
+            <strong>Atenção:</strong> As informações fornecidas são genéricas e não substituem o aconselhamento de um nutricionista, profissional de educação física ou médico. Consulte especialistas para um plano personalizado e seguro.
+        </p>
+    </div>
+
+    <script>
+        // COLE SEU CÓDIGO JAVASCRIPT (script.js) INTEIRO AQUI
+        // (O código JavaScript fornecido na resposta anterior)
+
+        // Função para obter os valores dos campos de entrada
+        function obterValoresEntrada() {
+            const peso = parseFloat(document.getElementById('peso').value);
+            const alturaCm = parseFloat(document.getElementById('altura').value);
+            const alturaM = alturaCm / 100; // Converte altura de cm para metros
+            const biotipo = document.getElementById('biotipo').value;
+            return { peso, alturaM, biotipo };
+        }
+
+        // Função para calcular o IMC
+        function calcularIMC(peso, alturaM) {
+            if (peso > 0 && alturaM > 0) {
+                const imc = peso / (alturaM * alturaM);
+                return parseFloat(imc.toFixed(2));
+            }
+            return null;
+        }
+
+        // Função para classificar o IMC e retornar a string da classificação
+        function obterClassificacaoIMC(imc) {
+            if (imc === null) return null;
+            if (imc < 18.5) return "Abaixo do peso";
+            if (imc < 24.9) return "Peso normal";
+            if (imc < 29.9) return "Sobrepeso";
+            if (imc < 34.9) return "Obesidade Grau I";
+            if (imc < 39.9) return "Obesidade Grau II";
+            return "Obesidade Grau III";
+        }
+
+        // Função para gerar o HTML da classificação do IMC
+        function exibirClassificacaoIMC(imc, classificacao) {
+            if (imc === null || classificacao === null) {
+                // Erro já será tratado na validação principal
+                return ""; // Retorna string vazia se o erro for tratado em outro lugar
+            }
+            return `<h2>Seu IMC: ${imc} (${classificacao})</h2>`;
+        }
+
+
+        // Função para gerar o plano de dieta
+        function gerarPlanoDieta(biotipo, imc) {
+            let plano = {
+                titulo: `Plano Dietético Sugerido para ${biotipo.charAt(0).toUpperCase() + biotipo.slice(1)}`,
+                descricaoGeral: "",
+                macronutrientes: "",
+                alimentosRecomendados: {
+                    proteinas: [],
+                    carboidratos: [],
+                    gorduras: []
+                },
+                dicasAdicionais: []
+            };
+
+            switch (biotipo) {
+                case 'ectomorfo':
+                    plano.descricaoGeral = "Ectomorfos geralmente possuem um metabolismo acelerado. A dieta deve ser rica em calorias, com foco em carboidratos complexos e proteínas de qualidade.";
+                    plano.macronutrientes = "Sugestão: 50-60% Carboidratos, 20-25% Proteínas, 20-25% Gorduras Saudáveis.";
+                    plano.alimentosRecomendados.proteinas = ["Frango", "Peixe", "Ovos", "Carne vermelha magra", "Tofu", "Leguminosas", "Whey Protein"];
+                    plano.alimentosRecomendados.carboidratos = ["Batata doce", "Arroz integral", "Aveia", "Quinoa", "Mandioca", "Pães integrais", "Frutas"];
+                    plano.alimentosRecomendados.gorduras = ["Abacate", "Azeite de oliva", "Nozes e castanhas", "Sementes", "Pasta de amendoim"];
+                    plano.dicasAdicionais = [
+                        "Faça refeições menores e mais frequentes (5-6 por dia).",
+                        "Não pule refeições.",
+                        "Considere shakes hipercalóricos caseiros se necessário.",
+                        "Mantenha-se bem hidratado."
+                    ];
+                    if (imc !== null && imc < 18.5) {
+                        plano.dicasAdicionais.unshift("Seu IMC indica baixo peso. Foque em um superávit calórico consistente e saudável.");
+                    }
+                    break;
+                case 'mesomorfo':
+                    plano.descricaoGeral = "Mesomorfos tendem a ter facilidade para ganhar massa muscular e perder gordura. Uma dieta equilibrada é geralmente eficaz.";
+                    plano.macronutrientes = "Sugestão: 40-50% Carboidratos, 25-30% Proteínas, 20-30% Gorduras Saudáveis.";
+                    plano.alimentosRecomendados.proteinas = ["Frango", "Peixe", "Ovos", "Carne magra", "Iogurte grego", "Queijos magros"];
+                    plano.alimentosRecomendados.carboidratos = ["Arroz integral", "Batata doce", "Quinoa", "Frutas", "Vegetais", "Pães integrais"];
+                    plano.alimentosRecomendados.gorduras = ["Abacate", "Azeite de oliva", "Oleaginosas", "Sementes", "Peixes gordurosos"];
+                    plano.dicasAdicionais = [
+                        "Ajuste calorias conforme seus objetivos (manutenção, ganho de massa, perda de gordura).",
+                        "Priorize alimentos integrais.",
+                        "Mantenha-se bem hidratado."
+                    ];
+                    break;
+                case 'endomorfo':
+                    plano.descricaoGeral = "Endomorfos podem ter metabolismo mais lento e maior propensão a acumular gordura. Controle de carboidratos e foco em proteínas e fibras são importantes.";
+                    plano.macronutrientes = "Sugestão: 25-35% Carboidratos (complexos e fibrosos), 30-40% Proteínas, 30-35% Gorduras Saudáveis.";
+                    plano.alimentosRecomendados.proteinas = ["Frango", "Peixes brancos", "Ovos", "Carnes magras", "Leguminosas", "Queijo cottage"];
+                    plano.alimentosRecomendados.carboidratos = ["Vegetais folhosos", "Brócolis", "Couve-flor", "Berries", "Porções moderadas de quinoa ou batata doce"];
+                    plano.alimentosRecomendados.gorduras = ["Abacate", "Azeite de oliva", "Sementes de chia/linhaça", "Nozes"];
+                    plano.dicasAdicionais = [
+                        "Controle as porções e a ingestão calórica.",
+                        "Priorize vegetais ricos em fibras.",
+                        "Limite carboidratos refinados e açúcares.",
+                        "Mantenha-se bem hidratado."
+                    ];
+                    if (imc !== null && imc >= 25) {
+                        plano.dicasAdicionais.unshift("Seu IMC indica sobrepeso ou obesidade. Considere um déficit calórico moderado e sustentável.");
+                    }
+                    break;
+                default:
+                    // Este caso não deveria acontecer se a validação do biotipo for feita antes.
+                    // Mas é bom ter um fallback.
+                    return { titulo: "Erro", descricaoGeral: "Biotipo não reconhecido." };
+            }
+            return plano;
+        }
+
+        // Função para sugerir exercícios com base no IMC
+        function sugerirExercicios(imc, classificacaoIMC) {
+            let sugestoes = {
+                titulo: "Sugestões de Exercícios Físicos",
+                introducao: "<strong>Importante:</strong> Consulte um profissional de educação física ou médico antes de iniciar qualquer rotina de exercícios, especialmente se tiver condições preexistentes. Estas são apenas sugestões gerais.",
+                atividades: [],
+                observacoesGerais: [
+                    "Comece devagar e aumente a intensidade e duração gradualmente.",
+                    "Escolha atividades que você goste para aumentar a adesão a longo prazo.",
+                    "A consistência é mais importante do que a intensidade no início.",
+                    "Aqueça antes e alongue após os exercícios.",
+                    "Mantenha-se hidratado: beba água antes, durante e após os treinos."
+                ]
+            };
+
+            if (imc === null || classificacaoIMC === null) {
+                 // Erro já será tratado na validação principal
+                return { titulo: "Erro nos Dados", introducao: "Não foi possível calcular o IMC para sugerir exercícios.", atividades: [], observacoesGerais: []};
+            }
+
+            sugestoes.titulo = `Sugestões de Exercícios para IMC ${classificacaoIMC}`;
+
+            if (imc < 18.5) { // Abaixo do peso
+                sugestoes.atividades = [
+                    "<strong>Musculação (Treinamento de Força):</strong> 3-4 vezes por semana. Foco em exercícios compostos (agachamento, levantamento terra, supino, remada, desenvolvimento). Busque progressão de carga gradual e técnica correta.",
+                    "<strong>Calistenia:</strong> Alternativa à musculação, usando o peso do corpo (flexões, barras, mergulhos, agachamentos).",
+                    "<strong>Cardio Leve a Moderado:</strong> 2-3 vezes por semana (ex: caminhada, bicicleta leve) para saúde cardiovascular, sem exagerar para não dificultar o ganho de peso.",
+                    "<strong>Descanso Adequado:</strong> Fundamental para a recuperação e crescimento muscular. Durma bem!"
+                ];
+                sugestoes.observacoesGerais.unshift("Combine com uma dieta hipercalórica e rica em proteínas para otimizar o ganho de massa muscular.");
+            } else if (imc < 24.9) { // Peso normal
+                sugestoes.atividades = [
+                    "<strong>Treinamento de Força (Musculação/Calistenia):</strong> 2-3 vezes por semana para manter/aumentar massa muscular e força.",
+                    "<strong>Exercícios Cardiovasculares:</strong> 3-5 vezes por semana, 30-60 minutos (corrida, natação, bicicleta, dança, pular corda).",
+                    "<strong>Flexibilidade e Mobilidade:</strong> Incorporar alongamentos, Yoga ou Pilates regularmente.",
+                    "<strong>Varie os Treinos:</strong> Experimente diferentes atividades para manter o corpo estimulado e evitar monotonia."
+                ];
+                sugestoes.observacoesGerais.unshift("Mantenha uma dieta equilibrada para sustentar seu nível de atividade e objetivos.");
+            } else if (imc < 29.9) { // Sobrepeso
+                sugestoes.atividades = [
+                    "<strong>Exercícios Cardiovasculares:</strong> 4-5 vezes por semana, 30-60 minutos. Ótimas opções: caminhada vigorosa, corrida leve (se articulações permitirem), bicicleta, natação, elíptico.",
+                    "<strong>Treinamento de Força (Musculação):</strong> 2-3 vezes por semana para preservar/aumentar massa muscular (o que ajuda a acelerar o metabolismo). Foco em exercícios multiarticulares.",
+                    "<strong>Aumentar a Atividade Diária (NEAT):</strong> Usar escadas, caminhar mais, pausas ativas no trabalho.",
+                    "<strong>Exercícios de Baixo Impacto:</strong> Se houver dores articulares, priorize natação, hidroginástica, caminhada ou bicicleta."
+                ];
+                sugestoes.observacoesGerais.unshift("Combine com uma dieta com déficit calórico moderado para promover a perda de peso saudável.");
+            } else { // Obesidade (IMC >= 30)
+                let grauObesidade = "";
+                if (classificacaoIMC === "Obesidade Grau I") grauObesidade = " (Grau I)";
+                else if (classificacaoIMC === "Obesidade Grau II") grauObesidade = " (Grau II)";
+                else if (classificacaoIMC === "Obesidade Grau III") grauObesidade = " (Grau III)";
+                sugestoes.titulo = `Sugestões de Exercícios para IMC com Obesidade${grauObesidade}`;
+
+                sugestoes.atividades = [
+                    "<strong>Inicie com Baixo Impacto e Gradualmente:</strong> Caminhada diária (comece com 15-20 min, aumente para 30-60 min), natação, hidroginástica, bicicleta ergométrica são excelentes para proteger as articulações.",
+                    "<strong>Frequência:</strong> Tente ser ativo na maioria dos dias da semana, se possível diariamente.",
+                    "<strong>Treinamento de Força:</strong> 2-3 vezes por semana, começando com exercícios com peso corporal, máquinas com orientação ou elásticos. Crucial para preservar massa muscular e melhorar o metabolismo.",
+                    "<strong>Aumentar Atividade Diária (NEAT):</strong> Movimente-se mais no dia a dia (levantar a cada hora, pequenas caminhadas).",
+                    "<strong>Flexibilidade e Equilíbrio:</strong> Exercícios leves de alongamento e equilíbrio podem ajudar na mobilidade e prevenir quedas."
+                ];
+                sugestoes.observacoesGerais.unshift("<strong>É crucial</strong> consultar um médico e um profissional de educação física antes de iniciar. Eles adaptarão os exercícios à sua condição específica, garantindo segurança e eficácia.");
+                sugestoes.observacoesGerais.push("Foco na consistência e em criar hábitos sustentáveis. Encontre atividades que lhe deem prazer.");
+            }
+            return sugestoes;
+        }
+
+
+        // Função principal para orquestrar o cálculo e a exibição dos resultados
+        function calcularPlano() {
+            const { peso, alturaM, biotipo } = obterValoresEntrada();
+            const resultadoIMCElement = document.getElementById('resultadoIMC');
+            const planoDietaElement = document.getElementById('planoDieta');
+            const sugestoesExercicioElement = document.getElementById('sugestoesExercicio');
+
+            // Limpa resultados anteriores e mensagens de erro antigas
+            resultadoIMCElement.innerHTML = '';
+            planoDietaElement.innerHTML = '';
+            sugestoesExercicioElement.innerHTML = '';
+
+            // Validações básicas
+            let hasError = false;
+            if (isNaN(peso) || peso <= 0) {
+                resultadoIMCElement.innerHTML = "<p class='error'>Por favor, insira um valor válido para o peso.</p>";
+                hasError = true;
+            }
+            if (isNaN(alturaM) || alturaM <= 0) {
+                // Adiciona ao erro existente ou cria um novo
+                const errorMsg = "<p class='error'>Por favor, insira um valor válido para a altura.</p>";
+                resultadoIMCElement.innerHTML += (hasError ? "<br>" : "") + errorMsg;
+                hasError = true;
+            }
+            if (!biotipo) {
+                const errorMsg = "<p class='error'>Por favor, selecione um biotipo.</p>";
+                resultadoIMCElement.innerHTML += (hasError ? "<br>" : "") + errorMsg;
+                hasError = true;
+            }
+
+            if(hasError) return;
+
+
+            const imc = calcularIMC(peso, alturaM);
+            const classificacaoIMC = obterClassificacaoIMC(imc);
+
+            // Se houver erro no IMC (pouco provável se as validações acima passarem, mas por segurança)
+            if (imc === null || classificacaoIMC === null) {
+                resultadoIMCElement.innerHTML = "<p class='error'>Não foi possível calcular o IMC. Verifique os dados inseridos.</p>";
+                return;
+            }
+            resultadoIMCElement.innerHTML = exibirClassificacaoIMC(imc, classificacaoIMC);
+
+
+            // Gerar e exibir plano de dieta
+            const planoDietetico = gerarPlanoDieta(biotipo, imc);
+            let htmlPlano = `<h3>${planoDietetico.titulo}</h3>`;
+            if (planoDietetico.descricaoGeral) {
+                htmlPlano += `<p><strong>Descrição Geral da Dieta:</strong> ${planoDietetico.descricaoGeral}</p>`;
+            }
+            if (planoDietetico.macronutrientes) {
+                htmlPlano += `<p><strong>Sugestão de Macronutrientes:</strong> ${planoDietetico.macronutrientes}</p>`;
+            }
+            if (planoDietetico.alimentosRecomendados && planoDietetico.alimentosRecomendados.proteinas.length > 0) {
+                htmlPlano += `<h4>Alimentos Recomendados na Dieta:</h4>`;
+                htmlPlano += `<p><strong>Fontes de Proteínas:</strong> ${planoDietetico.alimentosRecomendados.proteinas.join(', ')}.</p>`;
+                htmlPlano += `<p><strong>Fontes de Carboidratos:</strong> ${planoDietetico.alimentosRecomendados.carboidratos.join(', ')}.</p>`;
+                htmlPlano += `<p><strong>Fontes de Gorduras Saudáveis:</strong> ${planoDietetico.alimentosRecomendados.gorduras.join(', ')}.</p>`;
+            }
+            if (planoDietetico.dicasAdicionais && planoDietetico.dicasAdicionais.length > 0) {
+                htmlPlano += `<h4>Dicas Adicionais da Dieta:</h4><ul>`;
+                planoDietetico.dicasAdicionais.forEach(dica => {
+                    htmlPlano += `<li>${dica}</li>`;
+                });
+                htmlPlano += `</ul>`;
+            }
+            planoDietaElement.innerHTML = htmlPlano;
+
+            // Gerar e exibir sugestões de exercícios
+            const sugestoesDeExercicios = sugerirExercicios(imc, classificacaoIMC);
+            let htmlExercicios = `<h3>${sugestoesDeExercicios.titulo}</h3>`;
+            if(sugestoesDeExercicios.introducao){
+                 htmlExercicios += `<p><em>${sugestoesDeExercicios.introducao}</em></p>`;
+            }
+            if (sugestoesDeExercicios.atividades && sugestoesDeExercicios.atividades.length > 0) {
+                htmlExercicios += `<h4>Atividades Físicas Sugeridas:</h4><ul>`;
+                sugestoesDeExercicios.atividades.forEach(atividade => {
+                    htmlExercicios += `<li>${atividade}</li>`;
+                });
+                htmlExercicios += `</ul>`;
+            }
+            if (sugestoesDeExercicios.observacoesGerais && sugestoesDeExercicios.observacoesGerais.length > 0) {
+                htmlExercicios += `<h4>Observações Gerais para Exercícios:</h4><ul>`;
+                sugestoesDeExercicios.observacoesGerais.forEach(obs => {
+                    htmlExercicios += `<li>${obs}</li>`;
+                });
+                htmlExercicios += `</ul>`;
+            }
+            sugestoesExercicioElement.innerHTML = htmlExercicios;
+        }
+    </script>
+</body>
+</html>
